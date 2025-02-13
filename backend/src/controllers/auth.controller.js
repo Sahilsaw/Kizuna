@@ -1,6 +1,7 @@
 import bcrypt from "bcryptjs";
 import { db } from "../libs/db.js";
 import { generateToken } from "../libs/utils.js";
+import cloudinary from "../libs/cloudinary.js";
 
 export const signup = async (req, res) => {
     const { fullName, password, email } = req.body;
@@ -74,6 +75,46 @@ export const logout = async (req, res) => {
     }
 };
 
-export const updateProfile= async(req,res)=>{
-    const {prpfilepic}=req.body;
+export const updateProfile = async (req, res) => {
+    const { profilepic } = req.body;
+    
+    if (!profilepic) {
+        return res.status(400).json({ message: "Empty field", success: false });
+    }
+
+    try {
+        // Upload image to Cloudinary
+        const response = await cloudinary.uploader.upload(profilepic);
+
+        // Update user's profile picture in the database
+        const { rows } = await db.query(
+            `UPDATE users SET profilepic = $1 WHERE id = $2 RETURNING id, fullname, email, profilepic`,
+            [response.secure_url, req.user.id]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ message: "User not found", success: false });
+        }
+
+        const updatedUser = rows[0];
+
+        return res.status(200).json({ 
+            message: "Profile updated successfully", 
+            success: true, 
+            user: updatedUser 
+        });
+
+    } catch (error) {
+        console.error("Error updating profile:", error);
+        return res.status(500).json({ message: "Internal Server Error", success: false });
+    }
+};
+
+export const check= (req,res)=>{
+    try {
+        res.status(200).json(req.user);
+    } catch (error) {
+        console.error("Error in checkAuth controller", error.message);
+        res.status(500).json({message:"Internal Server error",success:false});
+    }
 }

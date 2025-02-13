@@ -4,25 +4,36 @@ import { db } from "../libs/db.js";
 
 dotenv.config();
 
-export const protectRoute= (req,res,next)=>{
-    const token=req.cookies['jwt'];
-    if(!token){
-        res.status(401).json({success:false,message:"Unauthorized -No token provided"});
-    }
+export const protectRoute = async (req, res, next) => {
     try {
-        const decoded=jwt.verify(token,process.env.SECRET_KEY);
-        if(!decoded){
-            res.status(401).json({success:false,message:"Unauthorized -Invalid token"});
-        }
-        const { rows }=db.query('SELECT * from users where id=$1',[decoded.userID]);
-
-        if(rows.length<=0){
-            res.status(404).json({success:false,message:"User not found"});
+        const token = req.cookies.jwt;
+        if (!token) {
+            return res.status(401).json({ success: false, message: "Unauthorized - No token provided" });
         }
 
-        req.user={id:rows[0].id, fullName:rows[0].fullname, email:rows[0].email};
-        next();
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.SECRET_KEY);
+        } catch (error) {
+            return res.status(401).json({ success: false, message: "Unauthorized - Invalid token" });
+        }
+
+        const { rows } = await db.query('SELECT * FROM users WHERE id=$1', [decoded.userID]);
+
+        if (rows.length === 0) {
+            return res.status(404).json({ success: false, message: "User not found" });
+        }
+
+        req.user = {
+            id: rows[0].id,
+            fullName: rows[0].fullname,
+            email: rows[0].email
+        };
+
+        next(); // Move to the next middleware
+
     } catch (error) {
-        res.status(500).json({success:false,message:"Internal server error"});
+        console.error("Error in protectRoute:", error.message);
+        return res.status(500).json({ success: false, message: "Internal server error" });
     }
-}
+};
