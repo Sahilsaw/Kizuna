@@ -48,22 +48,26 @@ Kizuna is a real-time chat application built with the PERN (PostgreSQL, Express,
    ```sh
    cd backend
    npm install
-   npm start
+   npm run dev
    ```
 
 3. **Frontend Setup**
    ```sh
    cd frontend
    npm install
-   npm start
+   npm run dev
    ```
 
 4. **Environment Variables**
    Create a `.env` file in the backend directory and add:
    ```env
    PORT=5000
-   JWT_SECRET=your_secret_key
-   DATABASE_URL=your_postgresql_url
+   SECRET_KEY=                                 
+   NODE_ENV=development
+   CLOUDINARY_CLOUD_NAME=                        
+   CLOUDINARY_API_KEY=
+   CLOUDINARY_API_SECRET=
+   DATABASE_URL=
    ```
 
 ## 📷 Screenshots
