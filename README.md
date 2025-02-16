@@ -71,7 +71,7 @@ Kizuna is a real-time chat application built with the PERN (PostgreSQL, Express,
    ```
 
 ## 📷 Screenshots
-Coming soon!
+![Alt text](./)
 
 
 ## 📬 Contact
