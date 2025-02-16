@@ -1,25 +1,17 @@
 import React from 'react';
-import { axiosInstance } from './libs/axios.lib';
+import { Outlet } from 'react-router-dom';
+import { Toaster } from "react-hot-toast"; 
 
-import './app.css';
+import Navbar from './components/Navbar';
+import {useThemeStore} from './store/useThemeStore';
 
 function App() {
-  async function callfun() {
-    try {
-      const response = await axiosInstance.post('/auth/login', {
-        password: 'omarora123',
-        email: 'om@gmail.com',
-      });
-
-      console.log('Login Successful:', response.data); 
-    } catch (error) {
-      console.error('Login Failed:', error.response ? error.response.data : error.message);
-    }
-  }
-
+  const{ theme }=useThemeStore();
   return (
-    <div className="flex items-center justify-center min-h-screen bg-base-200">
-      <button className="btn btn-primary" onClick={callfun}>Click Me</button>
+    <div data-theme={ theme }>
+      <Navbar />
+      <Outlet /> 
+      <Toaster /> 
     </div>
   );
 }

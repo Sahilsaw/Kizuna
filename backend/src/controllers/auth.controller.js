@@ -27,7 +27,7 @@ export const signup = async (req, res) => {
 
         // Insert new user
         const result = await db.query(
-            "INSERT INTO users (email, password, fullname) VALUES ($1, $2, $3) RETURNING id, fullname, profilepic",
+            "INSERT INTO users (email, password, fullname) VALUES ($1, $2, $3) RETURNING id, fullname, profilepic,email,created_at",
             [email, hashedPassword, fullName]
         );
 
@@ -36,7 +36,7 @@ export const signup = async (req, res) => {
         // Generate token
         generateToken(user.id, res);
 
-        return res.status(201).json({ success: true, user, message:"User successfully created" });
+        return res.status(201).json({user});
 
     } catch (error) {
         console.error("Signup Error:", error);
@@ -53,7 +53,7 @@ export const login = async (req, res) => {
             const isPasswordCorrect= await bcrypt.compare(password, user.password);
             if(isPasswordCorrect){
                 generateToken(user.id,res);
-                res.status(200).json({ success: true, user:{id:user.id, email:user.email, fullName:user.fullname}, message:"User login success" });
+                res.status(200).json({user:{id:user.id, email:user.email, fullName:user.fullname,profilePic:user.profilepic,createdAt:user.created_at}});
             }else{
                 res.status(400).json({ success: false, message:"Invalid Credentials" });
             }
@@ -76,33 +76,32 @@ export const logout = async (req, res) => {
 };
 
 export const updateProfile = async (req, res) => {
-    const { profilepic } = req.body;
+    const { profilePic } = req.body;
     
-    if (!profilepic) {
+    if (!profilePic) {
+        console.log("Empty field");
+        
         return res.status(400).json({ message: "Empty field", success: false });
     }
 
     try {
         // Upload image to Cloudinary
-        const response = await cloudinary.uploader.upload(profilepic);
+        const response = await cloudinary.uploader.upload(profilePic);
 
         // Update user's profile picture in the database
         const { rows } = await db.query(
-            `UPDATE users SET profilepic = $1 WHERE id = $2 RETURNING id, fullname, email, profilepic`,
+            `UPDATE users SET profilepic = $1 WHERE id = $2 RETURNING id, fullname, email, profilepic,created_at`,
             [response.secure_url, req.user.id]
         );
 
         if (rows.length === 0) {
+            console.log("User not found");
             return res.status(404).json({ message: "User not found", success: false });
         }
 
         const updatedUser = rows[0];
 
-        return res.status(200).json({ 
-            message: "Profile updated successfully", 
-            success: true, 
-            user: updatedUser 
-        });
+        return res.status(200).json({user:{id:updatedUser.id, email:updatedUser.email, fullName:updatedUser.fullname,profilePic:updatedUser.profilepic,createdAt:updatedUser.created_at}});
 
     } catch (error) {
         console.error("Error updating profile:", error);
@@ -112,7 +111,7 @@ export const updateProfile = async (req, res) => {
 
 export const check= (req,res)=>{
     try {
-        res.status(200).json(req.user);
+        res.status(200).json({user:req.user});
     } catch (error) {
         console.error("Error in checkAuth controller", error.message);
         res.status(500).json({message:"Internal Server error",success:false});

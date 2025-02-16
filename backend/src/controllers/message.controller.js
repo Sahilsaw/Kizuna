@@ -1,4 +1,6 @@
 import { db } from "../libs/db.js";
+import { getReceiverSocketId,io } from "../libs/socket.js";
+import cloudinary from "../libs/cloudinary.js";
 
 export const getUsersForSidebar = async (req, res) => {
     try {
@@ -26,7 +28,7 @@ export const getChat= async(req,res)=>{
             ORDER BY created_at ASC`,
             [myID, receiverID]
         );
-        res.status(200).json({filteredMessages,success:true});
+        res.status(200).json(filteredMessages);
     } catch (error) {
         console.log("Error fetching message",error.message);
         res.status(500).json({message:"Internal Server Error", success:false})
@@ -51,7 +53,11 @@ export const sendMessage = async (req, res) => {
         [senderId, receiverId, text, imageUrl]
       );
   
-      res.status(201).json({ message: rows[0], success: true });
+      const receiverSocketID= getReceiverSocketId(receiverId);
+
+      io.to(receiverSocketID).emit("newMessage",rows[0]);
+
+      res.status(201).json(rows[0]);
     } catch (error) {
       console.error("Error in sendMessage controller:", error.message);
       res.status(500).json({ error: "Internal server error" });
