@@ -13,7 +13,7 @@ connectDB();
 
 const PORT= process.env.PORT;
 
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "100mb" }));
 
 app.use(cors({
   origin: "http://localhost:5173",
