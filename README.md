@@ -73,8 +73,6 @@ Kizuna is a real-time chat application built with the PERN (PostgreSQL, Express,
 ## 📷 Screenshots
 Coming soon!
 
-## 📜 License
-This project is licensed under the MIT License.
 
 ## 📬 Contact
 For queries, reach out to me:
