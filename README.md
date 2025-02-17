@@ -1,6 +1,6 @@
 # Kizuna Chat Application
 
-Kizuna is a real-time chat application built with the PERN (PostgreSQL, Express, React, Node.js) stack. It enables seamless and secure communication between users using WebSockets and JWT authentication.
+Kizuna is a real-time chat application built with the PERN (PostgreSQL, Express, React, Node.js) stack deployed on AWS.
 
 ##  Live Demo
 
