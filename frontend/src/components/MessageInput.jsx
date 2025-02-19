@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { Image, Send, X } from "lucide-react";
 import toast from "react-hot-toast";
@@ -7,7 +7,15 @@ const MessageInput = () => {
   const [text, setText] = useState("");
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
+  const textareaRef = useRef(null);
   const { sendMessage } = useChatStore();
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto"; // Reset height
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // Set to new height
+    }
+  }, [text]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -28,6 +36,16 @@ const MessageInput = () => {
     if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+  const handleKeyDown = (e) => {
+      if (!isMobile && !e.shiftKey&&e.key === 'Enter') {
+        e.preventDefault();
+        handleSendMessage(e);
+      }
+  };
+
+
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!text.trim() && !imagePreview) return;
@@ -46,6 +64,7 @@ const MessageInput = () => {
       console.error("Failed to send message:", error);
     }
   };
+
 
   return (
     <div className="p-4 w-full">
@@ -71,14 +90,18 @@ const MessageInput = () => {
 
       <form onSubmit={handleSendMessage} className="flex items-center gap-2">
         <div className="flex-1 flex gap-2">
-          <input
-            type="text"
-            className="w-full input input-bordered rounded-lg input-sm sm:input-md"
+        <textarea
+            ref={textareaRef}
+            className="w-full input input-bordered rounded-lg input-sm sm:input-md resize-none overflow-y-auto break-words whitespace-pre-wrap max-h-[150px] py-2 px-3 leading-relaxed scrollbar-hide"
             placeholder="Type a message..."
             value={text}
             onChange={(e) => setText(e.target.value)}
-          />
-          <input
+            onKeyDown={handleKeyDown}
+            rows={1} // Starts with one row
+        />
+
+        </div>
+        <input
             type="file"
             accept="image/*"
             className="hidden"
@@ -94,7 +117,6 @@ const MessageInput = () => {
           >
             <Image size={20} />
           </button>
-        </div>
         <button
           type="submit"
           className="btn btn-sm btn-circle"

@@ -54,7 +54,7 @@ const ChatContainer = () => {
             className={`chat ${message.sender_id === user.id ? "chat-end" : "chat-start"}`}
             ref={messageEndRef}
           >
-            <div className=" chat-image avatar">
+            <div className="chat-image avatar">
               <div className="size-10 rounded-full border">
                 <img
                   src={
@@ -72,6 +72,7 @@ const ChatContainer = () => {
               </time>
             </div>
             <div className="chat-bubble flex flex-col">
+            
               {message.image && (
                 <img
                   src={message.image}
@@ -79,7 +80,9 @@ const ChatContainer = () => {
                   className="sm:max-w-[200px] rounded-md mb-2"
                 />
               )}
-              {message.text && <p>{message.text}</p>}
+              {message.text && <p className="whitespace-pre-wrap">{message.text}</p>}
+
+              
             </div>
           </div>
         ))}

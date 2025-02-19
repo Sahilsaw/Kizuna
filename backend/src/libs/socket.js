@@ -24,7 +24,6 @@ io.on("connection", (socket) => {
   const userID=socket.handshake.query.userID;
   onlineUsers[userID]=socket.id;
 
-  // io.emit() is used to send events to all the connected clients
   io.emit("getOnlineUsers", Object.keys(onlineUsers).map(Number));
 
   socket.on("disconnect", () => {

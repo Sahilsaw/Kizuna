@@ -19,8 +19,7 @@ const useAuthStore = create((set, get) => ({
     try {
       const response = await axiosInstance.get("/auth/check");
       set({ user: response.data.user });
-
-      get().connectToSocket();
+      get().connectToSocket(); // connect to socket.io as soon as user login    
     } catch (error) {
       console.log("Error at checking authentication", error.message);
       set({ user: null });
@@ -34,7 +33,6 @@ const useAuthStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post("/auth/signup", data);
       set({ user: res.data.user });
-
       get().connectToSocket();
       toast.success("Account created successfully");
     } catch (error) {

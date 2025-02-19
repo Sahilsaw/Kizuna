@@ -3,7 +3,6 @@ import express from "express";
 import authRouter from "./routes/auth.route.js";
 import messageRouter from "./routes/message.route.js";
 import dotenv from "dotenv";
-import { connectDB } from "./libs/db.js";
 import cors from "cors";
 import cookieParser from 'cookie-parser';
 import path from "path"
@@ -11,7 +10,6 @@ import path from "path"
 const __dirname= path.resolve();
 
 dotenv.config();
-connectDB();
 
 
 const PORT= process.env.PORT;
