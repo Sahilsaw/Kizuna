@@ -2,6 +2,7 @@ import { app,server } from "./libs/socket.js";
 import express from "express";
 import authRouter from "./routes/auth.route.js";
 import messageRouter from "./routes/message.route.js";
+import groupRoute from "./routes/groupRoutes.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from 'cookie-parser';
@@ -25,6 +26,7 @@ app.use(cookieParser());
 
 app.use('/api/auth',authRouter);
 app.use('/api/messages',messageRouter);
+app.use('/api/groups',groupRoute);
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));

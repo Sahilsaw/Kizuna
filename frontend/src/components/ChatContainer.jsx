@@ -12,27 +12,30 @@ const ChatContainer = () => {
     messages,
     getMessages,
     isMessagesLoading,
-    selectedUser,
+    selectedChat,
     subscribeToMessages,
     unsubscribeFromMessages,
   } = useChatStore();
-  const { user } = useAuthStore();
+  const { user,socket } = useAuthStore();
   const messageEndRef = useRef(null);
 
   useEffect(() => {
-    getMessages(selectedUser.id);
-
+    if (!selectedChat) return;
+    if (selectedChat.type === "group") {
+      socket.emit("joinGroup", selectedChat.id);
+    }
+    getMessages(selectedChat);
     subscribeToMessages();
-
     return () => unsubscribeFromMessages();
-  }, [selectedUser.id, getMessages, subscribeToMessages, unsubscribeFromMessages]);
+  }, [selectedChat, getMessages, subscribeToMessages, unsubscribeFromMessages]);
 
   useEffect(() => {
     if (messageEndRef.current && messages) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
-
+ 
+  if (!selectedChat) return <NoChatSelected />;
   if (isMessagesLoading) {
     return (
       <div className="flex-1 flex flex-col overflow-auto">
@@ -47,6 +50,7 @@ const ChatContainer = () => {
     <div className="flex-1 flex flex-col overflow-auto">
       <ChatHeader />
 
+
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div
@@ -54,13 +58,13 @@ const ChatContainer = () => {
             className={`chat ${message.sender_id === user.id ? "chat-end" : "chat-start"}`}
             ref={messageEndRef}
           >
-            <div className="chat-image avatar">
+          <div className="chat-image avatar">
               <div className="size-10 rounded-full border">
                 <img
                   src={
                     message.sender_id === user.id
                       ? user.profilePic || "/avatar.png"
-                      : selectedUser.profilepic || "/avatar.png"
+                      : selectedChat.type==='group'?message.profilepic|| "/avatar.png": selectedChat.profilepic|| "/avatar.png"
                   }
                   alt="profile pic"
                 />
@@ -71,18 +75,10 @@ const ChatContainer = () => {
                 {formatMessageTime(message.created_at)}
               </time>
             </div>
-            <div className="chat-bubble flex flex-col">
-            
-              {message.image && (
-                <img
-                  src={message.image}
-                  alt="Attachment"
-                  className="sm:max-w-[200px] rounded-md mb-2"
-                />
-              )}
-              {message.text && <p className="whitespace-pre-wrap">{message.text}</p>}
 
-              
+
+            <div className="chat-bubble flex flex-col">
+              {message.text && <p className="whitespace-pre-wrap">{message.text}</p>}
             </div>
           </div>
         ))}
@@ -92,4 +88,5 @@ const ChatContainer = () => {
     </div>
   );
 };
+
 export default ChatContainer;
