@@ -33,7 +33,7 @@ export const createGroup = async (req, res) => {
                 );
             });
         }
-
+        
         res.status(201).json(rows[0]);
     } catch (error) {
         console.error("Error in createGroup: ", error.message);

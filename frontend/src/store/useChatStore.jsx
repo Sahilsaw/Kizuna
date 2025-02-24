@@ -26,7 +26,7 @@ export const useChatStore = create((set, get) => ({
   getGroups: async () => {
     try {
       const res = await axiosInstance.get(`/groups/user`); 
-      set({ groups: res.data });
+      set({groups:[...res.data]});
     } catch (error) {
       toast.error(error.response.data.message);
     }
@@ -34,7 +34,7 @@ export const useChatStore = create((set, get) => ({
 
   addMembers: async(membersData)=>{
     try {
-      const{data}=axiosInstance.post('groups/add-member',membersData);
+      const{data}=await axiosInstance.post('groups/add-member',membersData);
       toast.success("Memebers added successfully")
     } catch (error) {
       console.log(error.message);
@@ -44,8 +44,11 @@ export const useChatStore = create((set, get) => ({
   },
 
   createGroup: async(groupData)=>{
+    const { groups } = get();
     try {
-        const {data}=axiosInstance.post('groups/create',groupData);
+        const {data}=await axiosInstance.post('groups/create',groupData);
+        set({groups:[...groups,data]});
+
     } catch (error) {
       console.log(error.message);
     }
@@ -84,11 +87,10 @@ export const useChatStore = create((set, get) => ({
   setSelectedChat: (chat) => set({ selectedChat: chat }),
 
   subscribeToMessages: () => {
-    const { selectedChat } = get();
-    if (!selectedChat) return;
+      const { selectedChat } = get();
 
-    const socket = useAuthStore.getState().socket;
-
+      if (!selectedChat) return;
+      const socket = useAuthStore.getState().socket;
 
       socket.on("newMessage", (newMessage) => {
       const isMessageSentFromSelectedUser = newMessage.sender_id === selectedChat.id;
@@ -104,6 +106,7 @@ export const useChatStore = create((set, get) => ({
 
    
   },
+
 
   unsubscribeFromMessages: () => {
     const socket = useAuthStore.getState().socket;

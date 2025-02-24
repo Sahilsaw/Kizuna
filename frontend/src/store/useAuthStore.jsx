@@ -102,6 +102,11 @@ const useAuthStore = create((set, get) => ({
     set({ socket: newSocket });
   },
 
+  connectToGroup:(groupID)=>{
+    const {socket}=get();
+    socket.emit("joinGroup", groupID);
+  },
+
   disconnectToSocket: () => {
     const { socket } = get();
     if (socket) {

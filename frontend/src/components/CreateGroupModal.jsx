@@ -1,15 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useChatStore } from "../store/useChatStore";
 import { X,UsersRound,Book,Camera } from "lucide-react";
 import MultiSelectSearch from "./MultiSelectSearch";
 import toast from "react-hot-toast";
 
 const CreateGroupModal = ({ onClose }) => {
-  const { users,createGroup, getGroups } = useChatStore();
+  const { users,createGroup } = useChatStore();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [profilepic, setProfilepic] = useState(null);
   const [selectedValues, setSelectedValues] = useState([]);
+
+  useEffect(()=>{
+    document.addEventListener('keyup',handleKeyUp)
+    return () => {
+      document.removeEventListener('keyup',handleKeyUp)
+    }
+  },[])
+
+  const handleKeyUp=(e)=>{
+    if(e.key==="Escape"){
+      onClose();
+    }
+  }
   
   const options=users.map((user)=>{
     return {value:user.id,label:user.fullname}
@@ -19,7 +32,6 @@ const CreateGroupModal = ({ onClose }) => {
     const selectedIDs=selectedValues.map(v=>v.value);
     try {
       await createGroup({name,description,profilepic,selectedIDs});
-      await getGroups();
       toast.success("Successfully created group");
     } catch (error) {
       toast.error(error?.message)

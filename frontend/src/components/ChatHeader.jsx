@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import { X,UserPlus } from "lucide-react";
 import  useAuthStore  from "../store/useAuthStore";
 import { useChatStore} from "../store/useChatStore";
@@ -11,6 +11,20 @@ const ChatHeader = () => {
   const [showAddMembersModal, setShowAddMembersModal] = useState(false);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
   
+  useEffect(()=>{
+      document.addEventListener('keyup',handleKeyUp)
+      return () => {
+        document.removeEventListener('keyup',handleKeyUp)
+      }
+    },[])
+  
+    const handleKeyUp=(e)=>{
+      if(e.key==="Escape"){
+        setShowAddMembersModal(false)
+      }
+    }
+
+
   const options=users.map((user)=>{
     return {value:user.id,label:user.fullname}
   })

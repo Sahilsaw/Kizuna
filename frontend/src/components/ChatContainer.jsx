@@ -16,15 +16,16 @@ const ChatContainer = () => {
     subscribeToMessages,
     unsubscribeFromMessages,
   } = useChatStore();
-  const { user,socket } = useAuthStore();
+  const { user,connectToGroup } = useAuthStore();
   const messageEndRef = useRef(null);
 
   useEffect(() => {
     if (!selectedChat) return;
     if (selectedChat.type === "group") {
-      socket.emit("joinGroup", selectedChat.id);
+      connectToGroup(selectedChat.id);
     }
     getMessages(selectedChat);
+    
     subscribeToMessages();
     return () => unsubscribeFromMessages();
   }, [selectedChat, getMessages, subscribeToMessages, unsubscribeFromMessages]);
