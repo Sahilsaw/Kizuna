@@ -19,7 +19,7 @@ const useAuthStore = create((set, get) => ({
     try {
       const response = await axiosInstance.get("/auth/check");
       set({ user: response.data.user });
-      get().connectToSocket(); // connect to socket.io as soon as user login    
+      get().connectToSocket();    
     } catch (error) {
       console.log("Error at checking authentication", error.message);
       set({ user: null });
@@ -48,8 +48,8 @@ const useAuthStore = create((set, get) => ({
     try {
       await axiosInstance.post("/auth/logout");
       set({ user: null });
-
       get().disconnectToSocket();
+
       toast.success("Successfully logged out");
     } catch (error) {
       toast.error(error.response?.data?.message || "Logout failed");

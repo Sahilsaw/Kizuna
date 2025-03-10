@@ -7,7 +7,8 @@ export function ProtectedRoutes({ children }) {
   const { user, checkAuth, isCheckingAuth } = useAuthStore();
 
   useEffect(() => {
-    checkAuth();
+    if(isCheckingAuth)
+      checkAuth();
   }, [checkAuth]); 
 
   if (isCheckingAuth)
@@ -24,7 +25,8 @@ export function AuthenticatedRoutes({ children }) {
   const { user, checkAuth, isCheckingAuth } = useAuthStore();
 
   useEffect(() => {
-    checkAuth();
+    if(isCheckingAuth)
+      checkAuth();
   }, [checkAuth]); 
 
   if (isCheckingAuth)
