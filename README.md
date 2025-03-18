@@ -18,8 +18,6 @@ Kizuna is a real-time chat application built with the PERN (PostgreSQL, Express,
 -  **Backend API** - Built with Express.js and tested using Postman.
 -  **CORS & Cookies** - Managed with `cors` and `cookie-parser` for security and session management.
 
-##  Screenshots
-![Register Page](./Register%20page.png)
 
 ## 🛠 Tech Stack
 
